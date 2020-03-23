@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
 
+
 # The secret key used for session encryption is randomly generated every time
 # the server is started up. This means all session data (including the 
 # shopping cart) is erased between server instances.
