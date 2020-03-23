@@ -1,6 +1,7 @@
 import csv
 
 
+
 def generate_CSV(file_name_string, category, fieldnames, values):
     """file_name_string = the name of the csv file"""
     """category = the mongoDB category: products, sessions......"""
