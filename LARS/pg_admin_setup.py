@@ -29,8 +29,7 @@ cur.execute("""CREATE TABLE products (
                     name varchar(255), 
                     description varchar(400), 
                     herhaalaankopen bool, 
-                    price int4, 
-                    mcrp int4, 
+                    price int4,
                     inhoud varchar(255), 
                     discount int4, 
                     PRIMARY KEY (ID)); """)
