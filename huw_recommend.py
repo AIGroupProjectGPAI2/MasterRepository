@@ -1,8 +1,10 @@
 from flask import Flask, request, session, render_template, redirect, url_for, g
 from flask_restful import Api, Resource, reqparse
 import os
+import psycopg2
 from pymongo import MongoClient
 from dotenv import load_dotenv
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -21,7 +23,21 @@ if os.getenv(envvals[0]) is not None:
     client = MongoClient(dbstring.format(*envvals))
 else:
     client = MongoClient()
-database = client.huwebshop 
+database = client.huwebshop
+
+#Connecting to PostgreSQL
+def SQL_fetch_data(SQL):
+    connection = psycopg2.connect(user="postgres",
+                                  password="root",
+                                    host="localhost",
+                                  port="5432",
+                                  database="postgres")
+    cursor = connection.cursor()
+    cursor.execute(SQL)
+    fetched_data = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return fetched_data
 
 class Recom(Resource):
     """ This class represents the REST API that provides the recommendations for
