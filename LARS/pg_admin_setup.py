@@ -1,16 +1,8 @@
 import psycopg2
 
-c = psycopg2.connect("dbname=postgres user=postgres password=3621") #TODO: edit this.
+c = psycopg2.connect("dbname=postgres user=postgres password=niels16") #TODO: edit this.
 cur = c.cursor()
 
-cur.execute("""ALTER TABLE sessions DROP CONSTRAINT FKsessions800212; """)
-cur.execute("""ALTER TABLE orders DROP CONSTRAINT FKorder8292; """)
-cur.execute("""ALTER TABLE orders DROP CONSTRAINT FKorder585286; """)
-cur.execute("""ALTER TABLE products DROP CONSTRAINT FKproducts292977; """)
-cur.execute("""ALTER TABLE products DROP CONSTRAINT FKproducts732050; """)
-cur.execute("""ALTER TABLE products DROP CONSTRAINT FKproducts907628; """)
-cur.execute("""ALTER TABLE profile_previously_viewed DROP CONSTRAINT FKprofile_pr728803; """)
-cur.execute("""ALTER TABLE profile_previously_viewed DROP CONSTRAINT FKprofile_pr801267; """)
 
 cur.execute("DROP TABLE IF EXISTS products CASCADE")
 cur.execute("DROP TABLE IF EXISTS categories CASCADE")
@@ -27,7 +19,7 @@ cur.execute("""CREATE TABLE products (
                     categoriesID varchar(255) NOT NULL, 
                     brandID varchar(255) NOT NULL,
                     name varchar(255), 
-                    description varchar(400), 
+                    description varchar(900), 
                     herhaalaankopen bool, 
                     price int4,
                     inhoud varchar(255), 
@@ -59,7 +51,7 @@ cur.execute("""CREATE TABLE sessions (
 cur.execute("""CREATE TABLE orders (
                     sessionsID varchar(255) NOT NULL, 
                     productID varchar(255) NOT NULL, 
-                    PRIMARY KEY (sessionsID)); """)
+                    PRIMARY KEY (sessionsID, productID)); """)
 
 cur.execute("""CREATE TABLE doelgroepen (
                     ID varchar(255) NOT NULL, 

@@ -2,7 +2,7 @@
 
 import psycopg2
 
-c = psycopg2.connect("dbname=postgres user=postgres password=3621")  #TODO: eigen wachtwoord instellen
+c = psycopg2.connect("dbname=postgres user=postgres password=niels16")  #TODO: eigen wachtwoord instellen
 cur = c.cursor()
 
 def data_koppeling(filenames):
@@ -12,7 +12,7 @@ def data_koppeling(filenames):
             cur.copy_expert("COPY "+filename+" FROM STDIN DELIMITER ',' CSV HEADER", csvfile)
             c.commit()
     return
-filenames = ['products']
+filenames = ['brands, categories, doelgroepen']
 data_koppeling(filenames)
 
 
