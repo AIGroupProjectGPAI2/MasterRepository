@@ -49,7 +49,7 @@ class Recom(Resource):
         through the API. It currently returns a random sample of products. """
         prodids = []
         if recommendationtype == "popular":
-            data = SQL_fetch_data("SELECT * FROM most_popular_products LIMIT 4;")
+            data = SQL_fetch_data(f"SELECT * FROM most_popular_products LIMIT {count};")
             for products in data:
                 prodids.append(products[0])
             print(prodids)
