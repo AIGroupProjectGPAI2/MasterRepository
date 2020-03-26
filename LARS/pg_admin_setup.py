@@ -46,6 +46,8 @@ cur.execute("""CREATE TABLE sessions (
                     ID varchar(255) NOT NULL, 
                     profilesID varchar(255) NOT NULL, 
                     device_type varchar(255), 
+                    session_start timestamp, 
+                    session_end timestamp
                     PRIMARY KEY (ID)); """)
 
 cur.execute("""CREATE TABLE orders (
