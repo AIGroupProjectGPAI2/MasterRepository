@@ -19,7 +19,7 @@ cur.execute("""CREATE TABLE products (
                     categoriesID varchar(255) NOT NULL, 
                     brandID varchar(255) NOT NULL,
                     name varchar(255), 
-                    description varchar(900), 
+                    description varchar(9000), 
                     herhaalaankopen bool, 
                     price int4,
                     inhoud varchar(255), 
