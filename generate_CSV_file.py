@@ -9,7 +9,8 @@ def generate_CSV(file_name_string, category, fieldnames, values):
     """category = the mongoDB category: products, sessions......"""
     """fieldnames = the header of the csv file (index[0] is not nullable)"""
     """values = the value name of the filedname(must be in the same order as fieldnames)"""
-    """fieldname[0] is the name of row 1 in the csv file, value[0] is the value for fieldname[0] to search for in the mongoDB"""
+    """fieldname[0] is the name of row 1 in the csv file, value[0] is the value for fieldname[0] to search for in the 
+    mongoDB """
     print("Creating the CSV file...")
     with open(file_name_string, 'w', newline='', encoding='utf-8') as csvout:
         writer = csv.DictWriter(csvout, fieldnames=fieldnames)
@@ -35,6 +36,7 @@ def gen_csv(filename, fieldnames):
 
 collections = ["products", "profiles", "sessions"]
 buid_profs_dict = {}
+all_products = []
 for collection in collections:
     col = mongoDB.get_collection(collection)
     if collection == "products":
@@ -123,15 +125,21 @@ for collection in collections:
                             'discount': product["price"].get("discount", None)
                         }
                     )
+                    try:
+                        all_products.append(product["_id"])
+                    except:
+                        continue
                 except KeyError:
                     print(product.get("_id", None), "Heeft geen properties")
+        print(all_products)
     elif collection == "profiles":
         query = {"buids": {"$ne": None}}
         c = 0
+        profiles_pids = {}
         with open('profiles.csv', 'w', newline='', encoding='utf-8') as profiles_file, open(
                 'profiles_previously_viewed.csv', 'w', newline='', encoding='utf-8') as ppv_file:
             profiles_fieldnames = ["ID", "segment"]
-            ppv_fieldnames = ["profileID", "productID"]
+            ppv_fieldnames = ["profileID", "productID", "count"]
             profiles_writer = csv.DictWriter(profiles_file, fieldnames=profiles_fieldnames)
             ppv_writer = csv.DictWriter(ppv_file, fieldnames=ppv_fieldnames)
             profiles_writer.writeheader()
@@ -145,15 +153,16 @@ for collection in collections:
                     if len(viewed_before) > 0:
                         rows = []
                         for pid in viewed_before:
-                            rows.append(
-                                {
-                                    "profileID": id,
-                                    "productID": pid
-                                }
-                            )
-                        ppv_writer.writerows(
-                            rows
-                        )
+                            if pid in all_products:
+                                pcnt = 1
+                                if pid in profiles_pids:
+                                    profiles_pids[pid]["count"] += 1
+                                else:
+                                    profiles_pids[pid] = {
+                                        "profileID": id,
+                                        "productID": pid,
+                                        "count": pcnt
+                                    }
                     if len(buids) > 0:
                         for buid in buids:
                             buid_profs_dict[buid] = str(id)
@@ -167,17 +176,27 @@ for collection in collections:
                 c += 1
                 if c % 10000 == 0:
                     print("{} profiles records written...".format(c))
+            for i in profiles_pids.keys():
+                ppv_writer.writerow(
+                    {
+                        "profileID": profiles_pids[i]["profileID"],
+                        "productID": profiles_pids[i]["productID"],
+                        "count": profiles_pids[i]["count"]
+                    }
+                )
         #print(buid_profs_dict)
     elif collection == "sessions":
         c = 0
         with open('sessions.csv', 'w', newline='', encoding='utf-8') as sessions_file, open('orders.csv', 'w', newline='', encoding='utf-8') as orders_file:
             sessions_fieldnames = ["ID", "profilesID", "device_type"]
-            orders_fieldnames = ["sessionsID", "productID"]
+            orders_fieldnames = ["sessionsID", "productID", "count"]
             sessions_writer = csv.DictWriter(sessions_file, fieldnames=sessions_fieldnames)
             orders_writer = csv.DictWriter(orders_file, fieldnames=orders_fieldnames)
             sessions_writer.writeheader()
             orders_writer.writeheader()
             query = {"buid": {"$ne": None}}
+            orders_pids = {}
+            orders_list = []
             for session in col.find(query):
                 buid = session.get("buid", None)[0]
                 try:
@@ -196,12 +215,30 @@ for collection in collections:
                 if order is not None:
                     products = order["products"]
                     for product in products:
-                        orders_writer.writerow(
-                            {
-                                'sessionsID': id,
-                                'productID': product["id"]
-                            }
-                        )
+                        if product["id"] in all_products:
+                            pcnt = 1
+                            if product["id"] in orders_pids:
+                                orders_pids[product["id"]]["count"] += 1
+                            else:
+                                orders_pids[product["id"]] = {
+                                    'sessionsID': id,
+                                    'productID': product["id"],
+                                    'count': pcnt
+                                }
+                            # orders_list.append(
+                            #     {
+                            #         'sessionsID': id,
+                            #         'productID': product["id"],
+                            #         'count': pcnt
+                            #     }
+                            # )
+                            # orders_writer.writerow(
+                            #     {
+                            #         'sessionsID': id,
+                            #         'productID': product["id"],
+                            #         'count': pcnt
+                            #     }
+                            # )
                 sessions_writer.writerow(
                     {
                         "ID": id,
@@ -213,13 +250,19 @@ for collection in collections:
                 c += 1
                 if c % 10000 == 0:
                     print("{} sessions records written...".format(c))
+            for i in orders_pids.keys():
+                orders_writer.writerow(
+                    {
+                        'sessionsID': orders_pids[i]["sessionsID"],
+                        'productID': orders_pids[i]["productID"],
+                        'count': orders_pids[i]["count"]
+                    }
+                )
 
 
-# for collection in collections:
-#     with open(collection + ".csv", "w", newline="") as csvout:
-#         col = mongoDB.get_collection(collection)
-#         if collection == "products":
-#             fieldnames = ["ID", "doelgroepenID", "categoriesID", "brandID", "name", "description", "herhaalaankopen", "price", "mcrp", "inhoud", "discount"]
+# for collection in collections: with open(collection + ".csv", "w", newline="") as csvout: col =
+# mongoDB.get_collection(collection) if collection == "products": fieldnames = ["ID", "doelgroepenID",
+# "categoriesID", "brandID", "name", "description", "herhaalaankopen", "price", "mcrp", "inhoud", "discount"]
 
 
 print("--- %s seconds ---" % (time.time() - start_time))
