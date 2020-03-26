@@ -28,10 +28,10 @@ database = client.huwebshop
 #Connecting to PostgreSQL
 def SQL_fetch_data(SQL):
     connection = psycopg2.connect(user="postgres",
-                                  password="root",
-                                    host="localhost",
+                                  password="Floris09",
+                                  host="localhost",
                                   port="5432",
-                                  database="postgres")
+                                  database="huwebshop")
     cursor = connection.cursor()
     cursor.execute(SQL)
     fetched_data = cursor.fetchall()
@@ -47,13 +47,13 @@ class Recom(Resource):
     def get(self, profileid, count, recommendationtype):
         """ This function represents the handler for GET requests coming in
         through the API. It currently returns a random sample of products. """
-        # prodids = ['25974', '42678', '1932', '26085']
+        prodids = []
         if recommendationtype == "popular":
-            print("hello world")
-            # data = SQL_fetch_data("SELECT * FROM most_popular_products LIMIT 4;")
-            # for products in data:
-            #     prodids.append(products[0])
-            # return prodids, 200
+            data = SQL_fetch_data("SELECT * FROM most_popular_products LIMIT 4;")
+            for products in data:
+                prodids.append(products[0])
+            print(prodids)
+            return prodids, 200
         randcursor = database.products.aggregate([{ '$sample': { 'size': count } }])
         prodids = list(map(lambda x: x['_id'], list(randcursor)))
         return prodids, 200
