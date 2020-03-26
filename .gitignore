@@ -4,3 +4,4 @@ datasets/
 .flaskenv
 utilities/imageurls.csv
 /CSV/
+/most_popular_products.csv
