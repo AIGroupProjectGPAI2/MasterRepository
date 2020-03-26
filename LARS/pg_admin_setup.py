@@ -1,6 +1,6 @@
 import psycopg2
 
-c = psycopg2.connect("dbname=huwebshop user=postgres password=Floris09") #TODO: edit this.
+c = psycopg2.connect("dbname=postgres user=postgres password=3621") #TODO: edit this.
 cur = c.cursor()
 
 
@@ -12,6 +12,7 @@ cur.execute("DROP TABLE IF EXISTS sessions CASCADE")
 cur.execute("DROP TABLE IF EXISTS orders CASCADE")
 cur.execute("DROP TABLE IF EXISTS doelgroepen CASCADE")
 cur.execute("DROP TABLE IF EXISTS brands CASCADE")
+cur.execute("DROP TABLE IF EXISTS populairste_producten CASCADE ")
 
 cur.execute("""CREATE TABLE products (
                     ID varchar(255) NOT NULL,
@@ -19,7 +20,7 @@ cur.execute("""CREATE TABLE products (
                     categoriesID varchar(255) NOT NULL, 
                     brandID varchar(255) NOT NULL,
                     name varchar(255), 
-                    description varchar(9000), 
+                    description varchar(900), 
                     herhaalaankopen bool, 
                     price int4,
                     inhoud varchar(255), 
@@ -35,24 +36,26 @@ cur.execute("""CREATE TABLE categories (
 
 cur.execute("""CREATE TABLE profile_previously_viewed (
                     profileID varchar(255) NOT NULL, 
-                    productID varchar(255) NOT NULL); """)
+                    productID varchar(255) NOT NULL,
+                    count int4 NOT NULL); """)
 
 cur.execute("""CREATE TABLE profiles (
                     ID varchar(255) NOT NULL, 
                     segment varchar(255), 
                     PRIMARY KEY (ID)); """)
 
-cur.execute("""CREATE TABLE sessions (
+cur.execute("""CREATE TABLE sessions (  
                     ID varchar(255) NOT NULL, 
                     profilesID varchar(255) NOT NULL, 
                     device_type varchar(255), 
-                    session_start timestamp, 
+                    session_start timestamp,
                     session_end timestamp,
                     PRIMARY KEY (ID)); """)
 
 cur.execute("""CREATE TABLE orders (
                     sessionsID varchar(255) NOT NULL, 
                     productID varchar(255) NOT NULL, 
+                    count int4 NOT NULL,
                     PRIMARY KEY (sessionsID, productID)); """)
 
 cur.execute("""CREATE TABLE doelgroepen (
@@ -65,6 +68,9 @@ cur.execute("""CREATE TABLE brands (
                     brand varchar(255), 
                     PRIMARY KEY (ID)); """)
 
+cur.execute("""CREATE TABLE populairste_producten (
+                    productsID varchar(255) NOT NULL, 
+                    PRIMARY KEY (productsID));""")
 
 cur.execute("""ALTER TABLE sessions ADD CONSTRAINT FKsessions800212 FOREIGN KEY (profilesID) REFERENCES profiles (ID); """)
 cur.execute("""ALTER TABLE orders ADD CONSTRAINT FKorder8292 FOREIGN KEY (sessionsID) REFERENCES sessions (ID); """)
@@ -74,7 +80,7 @@ cur.execute("""ALTER TABLE products ADD CONSTRAINT FKproducts732050 FOREIGN KEY 
 cur.execute("""ALTER TABLE products ADD CONSTRAINT FKproducts907628 FOREIGN KEY (brandID) REFERENCES brands (ID); """)
 cur.execute("""ALTER TABLE profile_previously_viewed ADD CONSTRAINT FKprofile_pr728803 FOREIGN KEY (productID) REFERENCES products (ID); """)
 cur.execute("""ALTER TABLE profile_previously_viewed ADD CONSTRAINT FKprofile_pr801267 FOREIGN KEY (profileID) REFERENCES profiles (ID); """)
-
+cur.execute("""ALTER TABLE populairste_producten ADD CONSTRAINT FKpopulairst726254 FOREIGN KEY (productsID) REFERENCES products (ID);""")
 
 c.commit()
 cur.close()

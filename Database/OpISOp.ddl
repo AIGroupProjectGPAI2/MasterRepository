@@ -17,7 +17,7 @@ DROP TABLE IF EXISTS profiles_previously_viewed CASCADE;
 CREATE TABLE doelgroepen (ID varchar(255) NOT NULL, target_audience varchar(255), PRIMARY KEY (ID));
 CREATE TABLE categories (ID varchar(255) NOT NULL, category varchar(255), subcategory varchar(255), subsubcategory varchar(255), PRIMARY KEY (ID));
 CREATE TABLE orders (sessionsID varchar(255) NOT NULL, productID varchar(255) NOT NULL, count int4 NOT NULL, PRIMARY KEY (sessionsID, productID));
-CREATE TABLE sessions (ID varchar(255) NOT NULL, profilesID varchar(255) NOT NULL, device_type varchar(255), PRIMARY KEY (ID));
+CREATE TABLE sessions (ID varchar(255) NOT NULL, profilesID varchar(255) NOT NULL, device_type varchar(255), , session_start timestamp, session_end timestamp, PRIMARY KEY (ID));
 CREATE TABLE profiles (ID varchar(255) NOT NULL, segment varchar(255), PRIMARY KEY (ID));
 CREATE TABLE products (ID varchar(255) NOT NULL, doelgroepenID varchar(255) NOT NULL, categoriesID varchar(255) NOT NULL, brandID varchar(255) NOT NULL, name varchar(255), description varchar(9000), herhaalaankopen bool, price int4, inhoud varchar(255), discount int4, PRIMARY KEY (ID));
 CREATE TABLE brands (ID varchar(255) NOT NULL, brand varchar(255), PRIMARY KEY (ID));
