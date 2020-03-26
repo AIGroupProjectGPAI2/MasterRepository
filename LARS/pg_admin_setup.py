@@ -44,7 +44,7 @@ cur.execute("""CREATE TABLE profiles (
                     segment varchar(255), 
                     PRIMARY KEY (ID)); """)
 
-cur.execute("""CREATE TABLE sessions ( 
+cur.execute("""CREATE TABLE sessions (  
                     ID varchar(255) NOT NULL, 
                     profilesID varchar(255) NOT NULL, 
                     device_type varchar(255), 
