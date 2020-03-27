@@ -1,5 +1,5 @@
 import csv, pymongo
-import time, requests
+import time
 start_time = time.time()
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 mongoDB = client["huwebshop"]
@@ -282,5 +282,4 @@ for collection in collections:
     elif collection == "sessions":
         sessions_csv()
 
-requests.post("https://api.pushcut.io/J-HBZN2tbjQl9vkZo-MSi/notifications/CSV%20DONE")
 print("--- %s seconds ---" % (time.time() - start_time))
