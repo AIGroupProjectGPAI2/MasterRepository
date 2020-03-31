@@ -85,9 +85,3 @@ def reset_db(connection, cursor):
     ALTER TABLE profiles_previously_viewed ADD CONSTRAINT FKprofiles_p938499 FOREIGN KEY (productID) REFERENCES products (ID);''')
     connection.commit()
 
-
-# conn = get_connection("Floris09", "huwebshop")
-# cur = get_cursor(conn)
-# filenamess = ['brands', 'categories', 'doelgroepen', 'products', 'profiles', 'sessions', 'profiles_previously_viewed',
-#              'orders']
-# reset_db(conn, cur)
