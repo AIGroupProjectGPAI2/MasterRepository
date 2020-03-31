@@ -4,6 +4,7 @@ import os
 import psycopg2
 from pymongo import MongoClient
 from dotenv import load_dotenv
+import  thebestsql as bsql
 
 
 app = Flask(__name__)
@@ -26,30 +27,33 @@ else:
 database = client.huwebshop
 
 #Connecting to PostgreSQL
-def SQL_fetch_data(SQL):
-    connection = psycopg2.connect(user="postgres",
-                                  password="Floris09",
-                                  host="localhost",
-                                  port="5432",
-                                  database="huwebshop")
-    cursor = connection.cursor()
-    cursor.execute(SQL)
-    fetched_data = cursor.fetchall()
-    cursor.close()
-    connection.close()
-    return fetched_data
+# def SQL_fetch_data(SQL):
+#     connection = psycopg2.connect(user="postgres",
+#                                   password="Floris09",
+#                                   host="localhost",
+#                                   port="5432",
+#                                   database="huwebshop")
+#     cursor = connection.cursor()
+#     cursor.execute(SQL)
+#     fetched_data = cursor.fetchall()
+#     cursor.close()
+#     connection.close()
+#     return fetched_data
 
 class Recom(Resource):
     """ This class represents the REST API that provides the recommendations for
     the webshop. At the moment, the API simply returns a random set of products
     to recommend."""
 
+
     def get(self, profileid, count, recommendationtype):
+        connection = bsql.get_connection("Floris09", "huwebshop")
+        cursor = bsql.get_cursor(connection)
         """ This function represents the handler for GET requests coming in
         through the API. It currently returns a random sample of products. """
         prodids = []
         if recommendationtype == "popular":
-            data = SQL_fetch_data(f"SELECT * FROM most_popular_products LIMIT {count};")
+            data = bsql.select_data(connection, cursor, f"SELECT * FROM most_popular_products LIMIT {count};")
             for products in data:
                 prodids.append(products[0])
             print(prodids)
