@@ -85,3 +85,16 @@ def reset_db(connection, cursor):
     ALTER TABLE profiles_previously_viewed ADD CONSTRAINT FKprofiles_p938499 FOREIGN KEY (productID) REFERENCES products (ID);''')
     connection.commit()
 
+def SQL_fetch_data(SQL):
+    connection = psycopg2.connect(user="postgres",
+                                  password="niels16",
+                                  host="localhost",
+                                  port="5432",
+                                  database="postgres")
+    cursor = connection.cursor()
+    cursor.execute(SQL)
+    fetched_data = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return fetched_data
+
