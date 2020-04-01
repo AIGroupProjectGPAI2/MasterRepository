@@ -26,7 +26,7 @@ else:
     client = MongoClient()
 database = client.huwebshop
 
-#Connecting to PostgreSQL
+# Connecting to PostgreSQL
 # def SQL_fetch_data(SQL):
 #     connection = psycopg2.connect(user="postgres",
 #                                   password="Floris09",
