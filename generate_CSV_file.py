@@ -175,7 +175,7 @@ def profiles_csv():
                         "segment": rec.get("segment", None)
                     }
                 )
-                c += 1
+            c += 1
 
             # print(c)
             if c % 10000 == 0:
