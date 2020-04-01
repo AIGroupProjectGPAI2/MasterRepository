@@ -1,5 +1,5 @@
 import thebestsql as bsql
-import csv, random, requests
+import csv, random
 
 conn = bsql.get_connection("Floris09", "huwebshop")
 cur = bsql.get_cursor(conn)
@@ -70,4 +70,3 @@ def sort_all_products():
             if cnt % 100 == 0:
                 print(cnt, '/', ldata)
 sort_all_products()
-requests.post("https://api.pushcut.io/J-HBZN2tbjQl9vkZo-MSi/notifications/CSV%20DONE")
