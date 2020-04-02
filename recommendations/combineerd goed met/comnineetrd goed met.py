@@ -7,7 +7,7 @@ cur = bsql.get_cursor(conn)
 def combineert_goed_met():
     orders_cats = {}
     orders = {}
-    query = '''
+    query_1 = '''
             select s.id, count(p.id)
             from products as p, orders as o, sessions as s
             where p.id = o.productid
@@ -16,13 +16,26 @@ def combineert_goed_met():
             having
 	            count(p.id) > 1;
          '''
-    data = bsql.select_data(cur, query)
-
-
-    for row in data:
+    data_1 = bsql.select_data(cur, query_1)
+    query_2 = '''
+                select s.id, count(p.id)
+                from products as p, orders as o, sessions as s
+                where p.id = o.productid
+                and o.sessionsid = s.id
+                group by s.id
+                having
+    	            count(p.id) > 1;
+             '''
+    data_2 = bsql.select_data(cur, query_2)
+    list = []
+    for row in data_1:
         ses_id = row[0]
         products_in_order = row[1]
-        print(ses_id, products_in_order)
+        list.append([ses_id, products_in_order])
+
+
+
+
 
     # for row in data:
     #     cat = row[1]
