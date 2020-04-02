@@ -53,11 +53,15 @@ def profile_products(data):
     return profile_products_list
 def profile_popular_products(profile_products):
     popular_products = dict({})
-    for keys in profile_products:
-        products = profile_products.get(keys)
-        if len(products) > 4:
-            top_products = top_frequent_items(products, 5)
-            popular_products.update({keys: top_products})
+    try:
+        for keys in profile_products:
+            products = profile_products.get(keys)
+            if len(products) > 4:
+                top_products = top_frequent_items(products, 5)
+                popular_products.update({keys: top_products})
+    except Exception as e:
+        print(e)
+
     return popular_products
 
 
