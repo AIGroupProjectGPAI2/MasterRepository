@@ -1,7 +1,7 @@
 import csv
 import thebestsql as bsql
 
-conn = bsql.get_connection("3621", "postgres")
+conn = bsql.get_connection("Floris09", "huwebshop")
 cur = bsql.get_cursor(conn)
 
 def combineert_goed_met():
