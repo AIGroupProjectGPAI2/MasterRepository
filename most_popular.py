@@ -3,8 +3,6 @@ import psycopg2, csv
 c = psycopg2.connect("dbname=huwebshop user=postgres password=Floris09")
 cur = c.cursor()
 
-
-
 def get_data():
     cur.execute('''
     SELECT productid, count FROM orders WHERE sessionsid in (
