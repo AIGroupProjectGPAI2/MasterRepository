@@ -1,4 +1,5 @@
 import thebestsql as SQL
+import csv
 
 order_data = SQL.SQL_fetch_data("""SELECT profiles.id, orders.productid, orders.count
 FROM orders
@@ -61,12 +62,32 @@ def profile_popular_products(profile_products):
                 popular_products.update({keys: top_products})
         except Exception as ERROR:
             print(ERROR)
-
     return popular_products
 
 
-print(profile_popular_products(profile_products(data[:300])))
+data_dic = profile_popular_products(profile_products(data))
+print(data_dic)
 
 
+def generate_CSV(file_name_string, dictionary, fieldnames):
+    print("Creating the CSV file...")
+    with open(file_name_string, 'w', newline='', encoding='utf-8') as csvout:
+        writer = csv.DictWriter(csvout, fieldnames=fieldnames)
+        writer.writeheader()
+        written_records_counter = 0
+        for profile in dictionary:
+            writeDict = {}
+            writeDict.update({fieldnames[0]: profile})
+            count = 0
+            for x in dictionary.get(profile):
+                count += 1
+                writeDict.update({fieldnames[count]: x})
+            writer.writerow(writeDict)
+            written_records_counter += 1
+            if written_records_counter % 10000 == 0:
+                print("{} product records written...".format(written_records_counter))
+    print("Finished creating the product database contents.")
 
+
+generate_CSV("persoonlijk_aangeboden", data_dic, ["profileid", "productid1", "productid2", "productid3", "productid4", "productid5"])
 
