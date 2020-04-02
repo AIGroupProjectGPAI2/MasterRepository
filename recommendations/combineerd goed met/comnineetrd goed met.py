@@ -1,7 +1,7 @@
 import csv
 import thebestsql as bsql
 
-conn = bsql.get_connection("Floris09", "huwebshop")
+conn = bsql.get_connection("3621", "postgres")
 cur = bsql.get_cursor(conn)
 
 def combineert_goed_met():
@@ -22,13 +22,17 @@ def combineert_goed_met():
              '''
     data_2 = bsql.select_data(cur, query_2)
     list = []
-    for row in data_1[:100]:
+    counter = 0
+    for row in data_1[:1000]:
+        counter += 1
+        if counter % 100 == 0:
+            print(counter)
         ses_id = row[0]
         products_in_order = row[1]
         list.append([ses_id, products_in_order])
     # print(data_1)
 
-    return data_1[:100]
+    return data_1[:1000]
 
 
 
@@ -62,18 +66,23 @@ def cleaner(dictionary):
 
 
 def product_counter(dictionary):
-
     new_dict = dict({})
     for item in dictionary:
         for producten in dictionary[item]:
-            print(producten)
             if producten not in new_dict:
                 print('')
+                list_tijdelijk = []
                 for i in dictionary[item]:
-                    if producten == i:
-                        dictionary[item].remove(i)
-                new_dict.update({producten : dictionary[item]})
-            # if producten in new_dict:
+                    print(i, producten)
+                    if producten != i:
+                        list_tijdelijk.append(i)
+                    print(list_tijdelijk)
+                new_dict.update({producten : list_tijdelijk})
+            if producten in new_dict:
+                switch = new_dict[producten]
+                print(switch, 'switch')
+                switch.append(dictionary[item])
+                new_dict.update({producten: switch})
 
     print(new_dict)
 
