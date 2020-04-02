@@ -98,3 +98,6 @@ def SQL_fetch_data(SQL):
     connection.close()
     return fetched_data
 
+def do_query(connection, cursor, query):
+    cursor.execute(query)
+    connection.commit()
