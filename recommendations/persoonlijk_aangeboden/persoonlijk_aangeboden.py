@@ -21,7 +21,7 @@ def profile_products(data):
                 profile_products_list.update({profiles: lst})
                 record_in_dic = True
                 break
-        if record_in_dic == False:
+        if not record_in_dic:
             products = [record[1]] * record[2]
             profile_products_list.update({record[0]: products})
     return profile_products_list
