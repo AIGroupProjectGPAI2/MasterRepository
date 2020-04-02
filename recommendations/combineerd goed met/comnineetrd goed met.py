@@ -70,8 +70,9 @@ def product_counter(dictionary):
             if producten not in new_dict:
                 print('')
                 for i in dictionary[item]:
-                    if producten != dictionary[item]:
-                        new_dict.update({producten : dictionary[item]})
+                    if producten == i:
+                        dictionary[item].remove(i)
+                new_dict.update({producten : dictionary[item]})
             # if producten in new_dict:
 
     print(new_dict)
