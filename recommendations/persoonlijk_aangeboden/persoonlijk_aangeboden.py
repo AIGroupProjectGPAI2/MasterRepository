@@ -38,6 +38,7 @@ def top_frequent_items(List, top_number):
 
 
 def profile_products(data):
+    print("Making profile_products dictionary....")
     profile_products_list = dict({})
     for record in data:
         record_in_dic = False
@@ -53,6 +54,7 @@ def profile_products(data):
             profile_products_list.update({record[0]: products})
     return profile_products_list
 def profile_popular_products(profile_products):
+    print("Making profile_popular_products dictionary....")
     popular_products = dict({})
     for keys in profile_products:
         try:
@@ -71,7 +73,7 @@ print(data_dic)
 
 def generate_CSV(file_name_string, dictionary, fieldnames):
     print("Creating the CSV file...")
-    with open(file_name_string, 'w', newline='', encoding='utf-8') as csvout:
+    with open(file_name_string + ".csv", 'w', newline='', encoding='utf-8') as csvout:
         writer = csv.DictWriter(csvout, fieldnames=fieldnames)
         writer.writeheader()
         written_records_counter = 0
