@@ -23,7 +23,7 @@ def combineert_goed_met():
     # data_2 = bsql.select_data(cur, query_2)
     counter = 0
     list = []
-    for row in data_1[10000]:
+    for row in data_1:
         counter += 1
         if counter % 100 == 0:
             print(counter)
@@ -32,7 +32,7 @@ def combineert_goed_met():
         list.append([ses_id, products_in_order])
     # print(data_1)
     print('return')
-    return data_1[:10000]
+    return data_1
 
 def profile_products(data):
     profile_products_list = dict({})
@@ -119,7 +119,7 @@ def filter(dictionary):
         if len(value) == 5:
             new_dict.update({element: value})
         elif len(value) > 5:
-            new_dict.update({element : value[:6]})
+            new_dict.update({element : value[:5]})
     return new_dict
 
 
@@ -127,8 +127,10 @@ def csv_creator(dictionary):
     print(dictionary)
     with open('combineert_goed_met.csv', 'w', newline="") as csv_file:
         writer = csv.writer(csv_file)
+        writer.writerow(['productid','productid1','productid2','productid3','productid4','productid5'])
         for key, value in dictionary.items():
-            writer.writerow([key, value])
+
+            writer.writerow([key, value[0], value[1], value[2], value[3], value[4]])
     csv_file.close()
 
 
