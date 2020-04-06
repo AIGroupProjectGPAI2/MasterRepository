@@ -1,6 +1,7 @@
 import thebestsql as SQL
 import csv
 
+product_data = SQL.SQL_fetch_data("""select id, herhaalaankopen from products;""")
 order_data = SQL.SQL_fetch_data("""SELECT profiles.id, orders.productid, orders.count
 FROM orders
 INNER JOIN sessions ON orders.sessionsid = sessions.id
@@ -38,6 +39,7 @@ def top_frequent_items(List, top_number):
 
 
 def profile_products(data):
+    print("Making profile_products dictionary....")
     profile_products_list = dict({})
     for record in data:
         record_in_dic = False
@@ -53,25 +55,44 @@ def profile_products(data):
             profile_products_list.update({record[0]: products})
     return profile_products_list
 def profile_popular_products(profile_products):
+    print("Making profile_popular_products dictionary....")
     popular_products = dict({})
     for keys in profile_products:
         try:
             products = profile_products.get(keys)
             if len(products) > 4:
-                top_products = top_frequent_items(products, 5)
+                top_products = top_frequent_items(products, len(products))
                 popular_products.update({keys: top_products})
         except Exception as ERROR:
             print(ERROR)
     return popular_products
 
 
-data_dic = profile_popular_products(profile_products(data))
+data_dic = profile_popular_products(profile_products(data[:1000]))
 print(data_dic)
 
+def profile_product_herhaalaankopen_check(popular_products, product_data):
+    for profiles in popular_products:
+        products = popular_products.get(profiles)
+        products2_0 = []
+        products2_0 += products
+        product_count = len(products) - 5
+        for count in range(len(products)):
+            count += 1
+            if len(products2_0) > 4:
+                product = products[-count]
+                for products_data in product_data:
+                    if product_data[0] == product:
+                        if product_data[1] == False:
+                            products2_0.remove(product_data[0])
+                            popular_products.update({profiles: products2_0})
+    return popular_products
+data_dic_herhaalaankopen = profile_product_herhaalaankopen_check(data_dic, product_data)
+print(data_dic_herhaalaankopen)
 
 def generate_CSV(file_name_string, dictionary, fieldnames):
     print("Creating the CSV file...")
-    with open(file_name_string, 'w', newline='', encoding='utf-8') as csvout:
+    with open(file_name_string + ".csv", 'w', newline='', encoding='utf-8') as csvout:
         writer = csv.DictWriter(csvout, fieldnames=fieldnames)
         writer.writeheader()
         written_records_counter = 0
@@ -79,7 +100,7 @@ def generate_CSV(file_name_string, dictionary, fieldnames):
             writeDict = {}
             writeDict.update({fieldnames[0]: profile})
             count = 0
-            for x in dictionary.get(profile):
+            for x in (dictionary.get(profile))[:5]:
                 count += 1
                 writeDict.update({fieldnames[count]: x})
             writer.writerow(writeDict)
@@ -89,5 +110,5 @@ def generate_CSV(file_name_string, dictionary, fieldnames):
     print("Finished creating the product database contents.")
 
 
-generate_CSV("persoonlijk_aangeboden", data_dic, ["profileid", "productid1", "productid2", "productid3", "productid4", "productid5"])
+generate_CSV("persoonlijk_aangeboden", data_dic_herhaalaankopen, ["profileid", "productid1", "productid2", "productid3", "productid4", "productid5"])
 
