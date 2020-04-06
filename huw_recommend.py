@@ -53,11 +53,40 @@ class Recom(Resource):
         through the API. It currently returns a random sample of products. """
         prodids = []
         if recommendationtype == "popular":
-            data = bsql.select_data(connection, cursor, f"SELECT * FROM most_popular_products LIMIT {count};")
-            for products in data:
-                prodids.append(products[0])
+            cat = profileid
+            cat = cat.replace("-", " ")
+            cat = cat.replace(" en ", " & ")
+            print(cat)
+            data = bsql.select_data(cursor, f"SELECT * FROM andere_kochten_ook WHERE LOWER(category) = LOWER('{cat}');")
+            for row in data:
+                print(row)
+                prodids = [row[1], row[2], row[3], row[4]]
             print(prodids)
-            return prodids, 200
+        if recommendationtype == "similar":
+            prod_id = profileid
+            data = bsql.select_data(cursor, f"SELECT * FROM soort_gelijke_producten WHERE productid = '{prod_id}';")
+            for row in data:
+                print(row)
+                prodids = [row[1], row[2], row[3], row[4]]
+            print(prod_id)
+        if recommendationtype == "behaviour":
+            data = bsql.select_data(cursor, f"SELECT * FROM passend_bij_uw_gedrag WHERE profileid = '{profileid}';")
+            for row in data:
+                print(row)
+                prodids = [row[1], row[2], row[3], row[4]]
+        if recommendationtype == "combination":
+            print(recommendationtype)
+            prod_id = profileid
+            data = bsql.select_data(cursor, f"SELECT * FROM combineert_goed_met WHERE productid = '{prod_id}'")
+            for row in data:
+                print(row)
+                prodids = [row[1], row[2], row[3], row[4]]
+        if recommendationtype == "personal":
+            data = bsql.select_data(cursor, f"SELECT * FROM public.persoonlijk_aangeboden WHERE profileid = '{profileid}';")
+            for row in data:
+                print(row)
+                prodids = [row[1], row[2], row[3], row[4]]
+        return prodids, 200
         randcursor = database.products.aggregate([{ '$sample': { 'size': count } }])
         prodids = list(map(lambda x: x['_id'], list(randcursor)))
         return prodids, 200
