@@ -1,4 +1,4 @@
-from Database import thebestsql as bsql
+from database import thebestsql as bsql
 
 connection = bsql.get_connection("Floris09", "huwebshop")
 cursor = bsql.get_cursor(connection)
