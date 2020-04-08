@@ -47,7 +47,6 @@ def get_combis():
                             combis[key][p] += 1
                         else:
                             combis[key][p] = 1
-
         c += 1
         if c % 100 == 0:
             print(c)
@@ -89,10 +88,107 @@ def order_dict_in_dict():
     for i in unsorted_combis:
         # tmp_sorted = sorted(unsorted_combis[i].items(), key=lambda x: x[1], reverse=True)
         sorted_combis[i] = sorted(unsorted_combis[i].items(), key=lambda x: x[1], reverse=True)
-        break
-    print(sorted_combis)
+    # print(sorted_combis)
+    return sorted_combis
+    print(sorted_combis["26085"][1][0])
     with open('test.json', 'w') as tf:
         tf.write(json.dumps(sorted_combis, indent=4))
 
+def write_to_csv():
+    sorted_combis = order_dict_in_dict()
+    with open('combineert_goed_met.csv', 'w', newline='', encoding='utf-8') as cgm_file:
+        cgm_fieldnames = ["productid", "productid1", "productid2", "productid3", "productid4"]
+        cgm_writer = csv.DictWriter(cgm_file, fieldnames=cgm_fieldnames)
+        cgm_writer.writeheader()
+        for i in sorted_combis:
+            key = i
+            c = get_category(key)
+            sc = get_subcategory(key)
+            sims = get_single_sim(key)
+            prio1 = []
+            prio2 = []
+            prio3 = []
+            for j in range(0, len(sorted_combis[i])):
+                if sorted_combis[i][j][1] > 4:
+                    #print(sorted_combis[i][j])
+                    if get_category(sorted_combis[i][j][0]) == c:
+                        if get_subcategory(sorted_combis[i][j][0]) == sc:
+                            prio1.append(sorted_combis[i][j][0])
+                        else:
+                            prio2.append(sorted_combis[i][j][0])
+                    else:
+                        prio3.append(sorted_combis[i][j][0])
+            if len(prio1) < 4:
+                need = 4 - len(prio1)
+                if len(prio2) >= need:
+                    prio1 = prio1 + prio2[:need]
+                else:
+                    prio1 = prio1 + sims[:need]
+            cgm_writer.writerow(
+                {
+                    "productid": key,
+                    "productid1": prio1[0],
+                    "productid2": prio1[1],
+                    "productid3": prio1[2],
+                    "productid4": prio1[3]
+                }
+            )
 
-order_dict_in_dict()
+
+
+
+def get_category(product_id):
+    query = f"""SELECT category FROM categories
+                WHERE id =(
+                    SELECT categoriesid FROM products
+                    WHERE id = '{product_id}')"""
+    data = bsql.select_data(cur, query)
+    c = None
+    for row in data:
+        c = row[0]
+    return c
+
+
+def get_subcategory(product_id):
+    query = f"""SELECT subcategory FROM categories
+                WHERE id =(
+                    SELECT categoriesid FROM products
+                    WHERE id = '{product_id}')"""
+    data = bsql.select_data(cur, query)
+    sc = None
+    for row in data:
+        sc = row[0]
+    return sc
+
+
+def get_single_sim(product_id):
+    query = f"""SELECT * FROM soort_gelijke_producten
+                WHERE productid = '{product_id}';"""
+    data = bsql.select_data(cur, query)
+    sim = []
+    for row in data:
+        for i in range(1, 6):
+            sim.append(row[i])
+    return sim
+
+def write_to_db():
+    bsql.copy_file_to_table(conn, cur, 'combineert_goed_met')
+
+tablename = 'combineert_goed_met'
+
+bsql.do_query(conn, cur, f'''
+            DROP TABLE IF EXISTS {tablename} CASCADE;
+        ''')
+bsql.do_query(conn, cur, f'''
+                CREATE TABLE {tablename} (productID varchar(255) NOT NULL, productID1 varchar(255) NOT NULL, productID2 varchar(255) NOT NULL, productID3 varchar(255) NOT NULL, productID4 varchar(255) NOT NULL);
+            ''')
+bsql.do_query(conn, cur, f'''
+    ALTER TABLE {tablename} ADD CONSTRAINT FKmost_poqul305529 FOREIGN KEY (productID) REFERENCES products (ID);
+    ALTER TABLE {tablename} ADD CONSTRAINT FKmost_powul305533 FOREIGN KEY (productID1) REFERENCES products (ID);
+    ALTER TABLE {tablename} ADD CONSTRAINT FKmost_popurl305534 FOREIGN KEY (productID2) REFERENCES products (ID);
+    ALTER TABLE {tablename} ADD CONSTRAINT FKmost_poprul305535 FOREIGN KEY (productID3) REFERENCES products (ID);
+    ALTER TABLE {tablename} ADD CONSTRAINT FKmost_popual305536 FOREIGN KEY (productID4) REFERENCES products (ID);
+''')
+
+write_to_csv()
+write_to_db()
